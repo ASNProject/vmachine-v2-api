@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Item extends Model
+class CustomerItemLimits extends Model
 {
     /**
      * fillable
@@ -12,10 +12,10 @@ class Item extends Model
      * @var array
      */
     protected $fillable = [
+        'uid',
         'name',
+        'group_id',
+        'limit_qty',
+        'limit_time_type',
     ];
-
-    public function group() {
-        return $this->belongsTo(ItemGroups::class);
-    }
 }

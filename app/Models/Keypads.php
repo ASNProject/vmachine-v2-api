@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Item extends Model
+class Keypads extends Model
 {
     /**
      * fillable
@@ -12,10 +12,7 @@ class Item extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
+        'keypad_code',
+        'item_id',
     ];
-
-    public function group() {
-        return $this->belongsTo(ItemGroups::class);
-    }
 }

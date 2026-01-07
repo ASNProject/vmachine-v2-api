@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
+    protected $primaryKey = 'uid';
+    public $incrementing = false;
+    protected $keyType = 'string';
     /**
      * fillable
      * 
@@ -16,6 +19,7 @@ class Customer extends Model
         'name',
         'phone_number',
         'role_id',
+        'status',
     ];
 
     /**
