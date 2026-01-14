@@ -13,9 +13,16 @@ class CustomerItemLimits extends Model
      */
     protected $fillable = [
         'uid',
-        'name',
         'group_id',
         'limit_qty',
         'limit_time_type',
     ];
+
+    public function group() {
+        return $this->belongsTo(ItemGroups::class, 'group_id');
+    }
+
+    public function customer() {
+        return $this->belongsTo(Customer::class, 'uid');
+    }
 }

@@ -19,7 +19,7 @@ class ItemController extends Controller
     public function index()
     {
         // get all data
-        $items = Item::latest()->paginate(10);
+        $items = Item::with('group')->latest()->paginate(10);
 
         return new Resource(true, 'List Data Items', $items);
     }
@@ -34,6 +34,7 @@ class ItemController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'         => 'required',
+            'group_id'     => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -41,7 +42,8 @@ class ItemController extends Controller
         }
 
         $item = Item::create([
-            'name'          => $request->name,  
+            'name'          => $request->name,
+            'group_id'      => $request->group_id,
         ]);
 
         return new Resource(true, 'Data Item Berhasil Ditambahkan', $item);

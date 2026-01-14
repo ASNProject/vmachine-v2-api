@@ -13,9 +13,10 @@ class Item extends Model
      */
     protected $fillable = [
         'name',
+        'group_id',
     ];
 
     public function group() {
-        return $this->belongsTo(ItemGroups::class);
+        return $this->belongsTo(ItemGroups::class, 'group_id');
     }
 }

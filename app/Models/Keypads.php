@@ -15,4 +15,8 @@ class Keypads extends Model
         'keypad_code',
         'item_id',
     ];
+
+    public function item() {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
 }

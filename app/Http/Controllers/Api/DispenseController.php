@@ -5,9 +5,27 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Customer;
+use App\Models\Keypads;
+use App\Models\Item;;
+use App\Models\LimitPeriods;
+use App\Models\CustomerItemUsage;
 
 class DispenseController extends Controller
 {
+    // /**
+    //  * index 
+    //  * 
+    //  * @return void
+    //  */
+    // public function index()
+    // {
+    //     // get all data
+    //     $customers = Customer::with('role')->latest()->paginate(10);
+
+    //     return new Resource(true, 'List Data Customers', $customers);
+    // }
+
     /**
      * store
      * 
@@ -28,16 +46,16 @@ class DispenseController extends Controller
         }
 
         // Item for keypad
-        $keypad = Keypad::where('keypad_code', $request->keypad_code)->first();
+        $keypad = Keypads::where('keypad_code', $request->keypad_code)->first();
         if (!$keypad) {
             return response()->json(['message'=>'Keypad tidak terdaftar'], 404);
         }
 
-        $item = Item::find($keypad->product_id);
+        $item = Item::find($keypad->item_id);
         $groupId = $item->group_id;
 
         // Get limit active period
-        $period = LimitPeriod::where([
+        $period = LimitPeriods::where([
             'uid' => $customer->uid,
             'group_id' => $groupId,
             'period_month' => now()->format('Y-m')
@@ -51,8 +69,8 @@ class DispenseController extends Controller
         $period->decrement('remaining_qty');
 
         // Log Usage
-        UserItemUsage::create([
-            'uid' => $user->uid,
+        CustomerItemUsage::create([
+            'uid' => $customer->uid,
             'item_id' => $item->id,
             'group_id' => $groupId,
             'keypad_code' => $request->keypad_code,

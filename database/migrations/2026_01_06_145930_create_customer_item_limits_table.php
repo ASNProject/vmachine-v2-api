@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('group_id')->constrained('item_groups');
             $table->integer('limit_qty');
             $table->enum('limit_time_type', ['HARIAN', 'MINGGUAN', 'BULANAN']);
+            $table->timestamps();
         });
     }
 

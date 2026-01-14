@@ -17,4 +17,12 @@ class LimitPeriods extends Model
         'period_month',
         'remaining_qty',
     ];
+
+    public function group() {
+        return $this->belongsTo(ItemGroups::class, 'group_id');
+    }
+
+    public function customer() {
+        return $this->belongsTo(Customer::class, 'uid');
+    }
 }

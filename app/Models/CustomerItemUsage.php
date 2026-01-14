@@ -17,4 +17,16 @@ class CustomerItemUsage extends Model
         'group_id',
         'keypad_code',
     ];
+
+    public function item() {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
+    public function group() {
+        return $this->belongsTo(ItemGroups::class, 'group_id');
+    }
+
+    public function customer() {
+        return $this->belongsTo(Customer::class, 'uid');
+    }
 }

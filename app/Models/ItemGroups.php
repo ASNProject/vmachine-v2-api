@@ -12,7 +12,11 @@ class ItemGroups extends Model
      * @var array
      */
     protected $fillable = [
-        'item_name',
+        'group_name',
         'description',
     ];
+
+    public function items() {
+        return $this->hasMany(Item::class, 'group_id');
+    }
 }
