@@ -53,8 +53,7 @@ class TransactionController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->first()
         ) {
-            $diff = Carbon::now()->diffInSeconds($lastTransaction->created_at);
-            if ($diff < 60) { // 60 detik cooldown
+            if ($lastTransaction->created_at->addSeconds(60)->isFuture()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Transaction cooldown period not yet passed.'
