@@ -9,9 +9,13 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\DispenseController;
 use App\Http\Controllers\Api\CustomerItemLimitController;
 use App\Http\Controllers\Api\CustomerItemUsageController;
-use App\Http\Controllers\Api\ItemGroupController;
+use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\KeypadController;
 use App\Http\Controllers\Api\LimitPeriodController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\DeviceController;
+use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\ConfigurationController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,28 +29,23 @@ Route::middleware('auth:sanctum')->group(function () {
 // Customer
 Route::apiResource('/customer', CustomerController::class);
 
-// Item
-Route::apiResource('/item', ItemController::class);
-
 // Role
 Route::apiResource('/role', RoleController::class);
 
-// Dispense
-Route::apiResource('/dispense', DispenseController::class);
-
-// Customer Item Limit
-Route::apiResource('/customer-item-limit', CustomerItemLimitController::class);
-
-// Customer Item Usage
-Route::apiResource('/customer-item-usage', CustomerItemUsageController::class);
-
 // Item Group 
-Route::apiResource('/item-group', ItemGroupController::class);
+Route::apiResource('/group', GroupController::class);
+Route::post('/group/{group}/product', [GroupController::class, 'addProduct']);
 
-// Keypad
-Route::apiResource('/keypad', KeypadController::class);
+// Product
+Route::apiResource('/product', ProductController::class);
 
-// Limit Period 
-Route::apiResource('/limit-period', LimitPeriodController::class);
+// Device
+Route::apiResource('/device', DeviceController::class);
+
+// Transaction
+Route::post('/transaction', [TransactionController::class, 'transaction']);
+
+// Configuration
+Route::apiResource('/configuration', ConfigurationController::class);
 
 

@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Item;
+use App\Models\Configuration;
 use App\Http\Resources\Resource;
 use Illuminate\Support\Facades\Validator;
 
-
-class ItemController extends Controller
+class ConfigurationController extends Controller
 {
     /**
      * index 
@@ -19,9 +18,9 @@ class ItemController extends Controller
     public function index()
     {
         // get all data
-        $items = Item::with('group')->latest()->paginate(10);
+        $configuration = Configuration::latest()->paginate(10);
 
-        return new Resource(true, 'List Data Items', $items);
+        return new Resource(true, 'List Data Configuration', $configuration);
     }
 
     /**
@@ -34,18 +33,18 @@ class ItemController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'         => 'required',
-            'group_id'     => 'required',
+            'status'       => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $item = Item::create([
+        $configuration = Configuration::create([
             'name'          => $request->name,
-            'group_id'      => $request->group_id,
+            'status'        => $request->status,
         ]);
 
-        return new Resource(true, 'Data Item Berhasil Ditambahkan', $item);
+        return new Resource(true, 'Data Configuration Berhasil Ditambahkan', $configuration);
     }
 }

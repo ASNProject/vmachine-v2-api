@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('groups', function (Blueprint $table) {
-            $table->id();
-            $table->string('group_name');
-            $table->text('description')->nullable();
-            $table->timestamps();
+        Schema::table('groups', function (Blueprint $table) {
+            Schema::table('groups', function (Blueprint $table) {
+                $table->integer('limits')->default(20)->after('products');            });
         });
     }
 
@@ -24,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('groups');
+        Schema::table('groups', function (Blueprint $table) {
+            $table->dropColumn('limits');
+        });
     }
 };

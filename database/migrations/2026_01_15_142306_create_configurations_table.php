@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_item_limits', function (Blueprint $table) {
+        Schema::create('configurations', function (Blueprint $table) {
             $table->id();
-            $table->string('uid');
-            $table->foreignId('group_id')->constrained('item_groups');
-            $table->integer('limit_qty');
-            $table->enum('limit_time_type', ['HARIAN', 'MINGGUAN', 'BULANAN']);
+            $table->string('name');
+            $table->boolean('status');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_item_limits');
+        Schema::dropIfExists('configurations');
     }
 };

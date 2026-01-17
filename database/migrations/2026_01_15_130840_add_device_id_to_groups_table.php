@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->unsignedBigInteger('group_id')->nullable();
-            $table->timestamps();
+        Schema::table('groups', function (Blueprint $table) {
+            $table->json('device_id')
+                    ->after('limits')
+                    ->nullable();
         });
     }
 
@@ -24,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('items');
+        Schema::table('groups', function (Blueprint $table) {
+            $table->dropColumn('device_id');
+        });
     }
 };

@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('items', function (Blueprint $table) {
-            $table->foreign('group_id')
-                  ->references('id')
-                  ->on('item_groups')
-                  ->nullOnDelete();
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->id();
+            $table->string('uid');
+            $table->string('device_name');
+            $table->string('group_id');
+            $table->string('product_id');
+            $table->timestamps();
         });
     }
 
@@ -24,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('items', function (Blueprint $table) {
-            $table->dropForeign(['group_id']);
-        });
+        Schema::dropIfExists('transactions');
     }
 };

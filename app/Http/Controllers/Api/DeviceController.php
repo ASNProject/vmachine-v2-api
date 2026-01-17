@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\ItemGroups;
+use App\Models\Device;
 use App\Http\Resources\Resource;
 use Illuminate\Support\Facades\Validator;
 
-class ItemGroupController extends Controller
+class DeviceController extends Controller
 {
     /**
      * index 
@@ -18,9 +18,9 @@ class ItemGroupController extends Controller
     public function index()
     {
         // get all data
-        $itemgroup = ItemGroups::latest()->paginate(10);
+        $device = Device::with('groups')->latest()->paginate(10);
 
-        return new Resource(true, 'List Data Item Group', $itemgroup);
+        return new Resource(true, 'List Data Device', $device);
     }
 
     /**
@@ -32,19 +32,17 @@ class ItemGroupController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'group_name'          => 'required',
+            'device_name'         => 'required',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $itemgroup = ItemGroups::create([
-            'group_name'           => $request->group_name,
-            'description'         => $request->description,
-
+        $device = Device::create([
+            'device_name'   => $request->device_name,
         ]);
 
-        return new Resource(true, 'Data Item Group Berhasil Ditambahkan', $itemgroup);
+        return new Resource(true, 'Data Device Berhasil Ditambahkan', $device);
     }
 }

@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('keypads', function (Blueprint $table) {
-            $table->string('keypad_code')->primary();
-            $table->foreignId('item_id')->constrained('items');
+        Schema::create('devices', function (Blueprint $table) {
+            $table->id();
+            $table->string('device_name');
             $table->timestamps();
         });
     }
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('keypads');
+        Schema::dropIfExists('devices');
     }
 };

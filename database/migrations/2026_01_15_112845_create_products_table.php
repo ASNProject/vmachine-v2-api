@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('limit_periods', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('uid');
-            $table->foreignId('group_id')->constrained('item_groups');
-            $table->string('period_month');
-            $table->integer('remaining_qty');
+            $table->string('product_name');
+            $table->string('keypad')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('limit_periods');
+        Schema::dropIfExists('products');
     }
 };

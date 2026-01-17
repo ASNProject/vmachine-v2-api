@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ItemGroups extends Model
+class Group extends Model
 {
     /**
      * fillable
@@ -13,7 +13,14 @@ class ItemGroups extends Model
      */
     protected $fillable = [
         'group_name',
+        'products',
+        'limits',
+        'device_id',
         'description',
+    ];
+
+    protected $casts = [
+        'products' => 'array',
     ];
 
     public function items() {
