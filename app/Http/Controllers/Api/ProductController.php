@@ -74,4 +74,10 @@ class ProductController extends Controller
         $product->delete();
         return new Resource(true, 'Data berhasil dihapus', null);
     }
+    public function show($id)
+    {
+        $product = Product::where('id', $id)->firstOrFail();
+
+        return new Resource(true, 'Detail Product', $product);
+    }
 }

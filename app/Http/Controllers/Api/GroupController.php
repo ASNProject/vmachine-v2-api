@@ -110,4 +110,11 @@ class GroupController extends Controller
         $group->delete();
         return new Resource(true, 'Data berhasil dihapus', null);
     }
+
+    public function show($id)
+    {
+        $group = Group::where('id', $id)->firstOrFail();
+
+        return new Resource(true, 'Detail Group', $group);
+    }
 }

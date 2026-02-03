@@ -20,6 +20,7 @@ class Customer extends Model
         'phone_number',
         'role_id',
         'status',
+        'limits',
     ];
 
     /**

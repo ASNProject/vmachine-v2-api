@@ -73,5 +73,12 @@ class DeviceController extends Controller
         return new Resource(true, 'Data berhasil dihapus', null);
     }
 
+    public function show($id)
+    {
+        $device = Device::with('groups')->where('id', $id)->firstOrFail();
+
+        return new Resource(true, 'Detail Device', $device);
+    }
+
 
 }

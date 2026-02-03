@@ -73,4 +73,10 @@ class RoleController extends Controller
         $role->delete();
         return new Resource(true, 'Data berhasil dihapus', null);
     }
+    public function show($id)
+    {
+        $role = Role::where('id', $id)->firstOrFail();
+
+        return new Resource(true, 'Detail Role', $role);
+    }
 }

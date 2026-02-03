@@ -51,6 +51,10 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Group limit exceeded.'], 422);
         }
 
+        if ($customer->limits <= 0){
+            return response()->json(['error' => 'Customer limit exceeded'], 422);
+        }
+
         $limitConfig = Configuration::where('name', 'limit_time')->first();
         $isLimitActive = $limitConfig ? (bool) $limitConfig->status : false;
 
@@ -72,6 +76,8 @@ class TransactionController extends Controller
 
         $group->limits -= 1;
         $group->save();
+        $customer->limits -= 1;
+        $customer->save();
 
         $transaction = Transaction::create([
             'uid'         => $customer->uid,
