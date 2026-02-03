@@ -12,4 +12,12 @@ class Transaction extends Model
         'group_id',
         'product_id',
     ];
+
+    public function group() {
+        return $this->belongsTo(Group::class);
+    }
+
+    public function product() {
+        return $this->belongsTo(Product::class);
+    }
 }

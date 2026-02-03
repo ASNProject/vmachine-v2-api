@@ -19,7 +19,7 @@ class GroupController extends Controller
     public function index()
     {
         // get all data
-        $itemgroup = Group::latest()->paginate(10);
+        $itemgroup = Group::with('device')->latest()->paginate(10);
 
         return new Resource(true, 'List Data Item Group', $itemgroup);
     }
@@ -80,5 +80,34 @@ class GroupController extends Controller
         $group->update(['products' => $products]);
 
         return new Resource(true, 'Product added to group successfully.', $group);
+    }
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'group_name'          => 'required',
+            'device_id'           => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $group = Group::where('id', $id)->firstOrFail();
+
+        $group->update([
+            'group_name'           => $request->group_name,
+            'limits'              => $request->limits,
+            'device_id'            => $request->device_id,
+            'description'         => $request->description,
+        ]);
+
+        return new Resource(true, 'Data Customer Berhasil Diperbarui', $group);
+    }
+    public function destroy($id)
+    {
+        $group = Group::find($id);
+
+        $group->delete();
+        return new Resource(true, 'Data berhasil dihapus', null);
     }
 }

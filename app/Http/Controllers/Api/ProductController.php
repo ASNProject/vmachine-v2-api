@@ -47,4 +47,31 @@ class ProductController extends Controller
 
         return new Resource(true, 'Data Product Berhasil Ditambahkan', $product);
     }
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'product_name'         => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $product = Product::where('id', $id)->firstOrFail();
+
+        $product->update([
+            'product_name'  => $request->product_name,
+            'keypad'        => $request->keypad,
+            'description'   => $request->description,
+        ]);
+
+        return new Resource(true, 'Data Customer Berhasil Diperbarui', $product);
+    }
+    public function destroy($id)
+    {
+        $product = Product::find($id);
+
+        $product->delete();
+        return new Resource(true, 'Data berhasil dihapus', null);
+    }
 }

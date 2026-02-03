@@ -26,4 +26,9 @@ class Group extends Model
     public function items() {
         return $this->hasMany(Item::class, 'group_id');
     }
+
+    public function device()
+    {
+        return $this->belongsTo(Device::class);
+    }
 }

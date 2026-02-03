@@ -16,6 +16,15 @@ use App\Models\Configuration;
 
 class TransactionController extends Controller
 {
+    /**
+     * index
+     */
+    public function index()
+    {
+        $transactions = Transaction::with(['group', 'product'])->latest()->get();
+
+        return new Resource(true, 'List Data Transactions', $transactions);
+    }
     public function transaction(Request $request)
     {
         $validator = Validator::make($request->all(), [

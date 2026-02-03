@@ -45,4 +45,33 @@ class DeviceController extends Controller
 
         return new Resource(true, 'Data Device Berhasil Ditambahkan', $device);
     }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'device_name'         => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $device = Device::where('id', $id)->firstOrFail();
+
+        $device->update([
+            'device_name'   => $request->device_name,
+        ]);
+
+        return new Resource(true, 'Data Customer Berhasil Diperbarui', $device);
+    }
+
+    public function destroy($id)
+    {
+        $device = Device::find($id);
+
+        $device->delete();
+        return new Resource(true, 'Data berhasil dihapus', null);
+    }
+
+
 }

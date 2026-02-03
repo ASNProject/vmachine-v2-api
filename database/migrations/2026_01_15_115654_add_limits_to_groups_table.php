@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('groups', function (Blueprint $table) {
-            Schema::table('groups', function (Blueprint $table) {
-                $table->integer('limits')->default(20)->after('products');            });
+            $table->integer('limits')->default(20)->after('products');            
         });
     }
 

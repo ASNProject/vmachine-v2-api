@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Customer
 Route::apiResource('/customer', CustomerController::class);
+// Route::delete('/customers/{uid}', [CustomerController::class, 'delete']);
 
 // Role
 Route::apiResource('/role', RoleController::class);
@@ -44,6 +45,7 @@ Route::apiResource('/device', DeviceController::class);
 
 // Transaction
 Route::post('/transaction', [TransactionController::class, 'transaction']);
+Route::apiResource('/transactions', TransactionController::class);
 
 // Configuration
 Route::apiResource('/configuration', ConfigurationController::class);
