@@ -263,6 +263,20 @@ Body:
 Route : http://127.0.0.1:8000/api/configuration
 ```
 
+##### Transaction
+- Post
+```
+Route : http://127.0.0.1:8000/api/transaction
+```
+```
+Body: 
+{
+    "uid": "U1234",
+    "device_name": "Device 1",
+    "group_id": "1",
+    "product_id": "1",
+}
+```
 
 ## Notes
 - Versi Larvel 12.0

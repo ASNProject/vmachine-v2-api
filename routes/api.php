@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\ConfigurationController;
+use App\Http\Controllers\Api\ReportController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -50,4 +51,15 @@ Route::apiResource('/transactions', TransactionController::class);
 // Configuration
 Route::apiResource('/configuration', ConfigurationController::class);
 
+Route::prefix('reports')->group(function () {
+    Route::get('/transactions', [ReportController::class, 'transactions']);
+    Route::get('/transactions/export', [ReportController::class, 'exportTransactions']);
 
+    Route::get('/products/top', [ReportController::class, 'topProducts']);
+    Route::get('/products/export', [ReportController::class, 'exportProducts']);
+
+    Route::get('/devices/usage', [ReportController::class, 'deviceUsage']);
+    Route::get('/devices/export', [ReportController::class, 'exportDevices']);
+});
+
+Route::delete('/reports/transactions/truncate', [ReportController::class, 'truncateTransactions']);
