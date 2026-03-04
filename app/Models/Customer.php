@@ -21,6 +21,7 @@ class Customer extends Model
         'role_id',
         'status',
         'limits',
+        'limit_group_device',
     ];
 
     /**
@@ -29,5 +30,14 @@ class Customer extends Model
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    protected $casts = [
+        'limit_group_device' => 'array',
+    ];
+
+    public function getRouteKeyName()
+    {
+        return 'uid';
     }
 }

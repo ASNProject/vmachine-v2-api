@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\Device;
+use App\Models\Group;
 use App\Models\Configuration;
 use App\Models\Transaction;
 use App\Http\Resources\Resource;
@@ -38,19 +40,56 @@ class CustomerController extends Controller
             'uid'          => 'required|unique:customers,uid',
             'name'         => 'required',
             'role_id'      => 'required',
-            'limits'        => 'required',
+            'limits'       => 'required',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
+        // Versi 1: Limit setiap group menggunakan default
+        // $groups = Groups::all();
+        // $limitGroupDevice = $groups->map(function ($group) {
+        //     return [
+        //         'device_id' => $group->device_id,
+        //         'group_id'  => $group->id,
+        //         'limit'     => 20,
+        //     ];
+        // })->values()->toArray();
+
+        // Versi 2: Dibagi dari limits
+        $groups = Group::all();
+        $groupCount = $groups->count();
+
+        if ($groupCount == 0) {
+            return response()->json([
+                'message' => 'No groups available in system'
+            ], 422);
+        }
+
+        $totalLimit   = (int) $request->limits;
+        $limitPerGroup = intdiv($totalLimit, $groupCount); 
+        $remainder     = $totalLimit % $groupCount;       
+
+        $limitGroupDevice = $groups->values()->map(function ($group, $index) 
+            use ($limitPerGroup, $remainder, $groupCount) {
+
+            return [
+                'device_id' => $group->device_id,
+                'group_id'  => $group->id,
+                'limit'     => $index === ($groupCount - 1)
+                                ? $limitPerGroup + $remainder
+                                : $limitPerGroup,
+            ];
+        })->toArray();
+
         $customer = Customer::create([
             'uid'           => $request->uid,
             'name'          => $request->name,
             'phone_number'  => $request->phone_number,
             'role_id'       => $request->role_id,
-            'limits'        => $request->limits,      
+            'limits'        => $request->limits,     
+            'limit_group_device' => $limitGroupDevice, 
         ]);
 
         return new Resource(true, 'Data Customer Berhasil Ditambahkan', $customer);
@@ -65,7 +104,6 @@ class CustomerController extends Controller
             ],
             'name' => 'required',
             'role_id' => 'required|exists:roles,id',
-            'limits' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -74,12 +112,41 @@ class CustomerController extends Controller
 
         $customer = Customer::where('uid', $uid)->firstOrFail();
 
+        $limitGroupDevice = $customer->limit_group_device;
+
+        if (!is_null($request->limits)) {
+
+            $groups = Group::all();
+            $groupCount = $groups->count();
+
+            if ($groupCount == 0) {
+                return response()->json([
+                    'message' => 'No groups available in system'
+                ], 422);
+            }
+
+            $totalLimit = (int) $request->limits;
+            $limitPerGroup = intdiv($totalLimit, $groupCount);
+            $remainder = $totalLimit % $groupCount;
+
+            $limitGroupDevice = $groups->values()->map(function ($group, $index)
+                use ($limitPerGroup, $remainder, $groupCount) {
+                    return [
+                        'device_id' => $group->device_id,
+                        'group_id' => $group->id,
+                        'limit' => $index === ($groupCount - 1) ? $limitPerGroup + $remainder : $limitPerGroup,
+                    ];
+                }
+            )->toArray();
+        }
+
         $customer->update([
             'uid'          => $request->uid,
             'name'         => $request->name,
             'phone_number' => $request->phone_number,
             'role_id'      => $request->role_id,
             'limits'       => $request->limits,
+            'limit_group_device' => $limitGroupDevice,
         ]);
 
         return new Resource(true, 'Data Customer Berhasil Diperbarui', $customer);
@@ -133,5 +200,79 @@ class CustomerController extends Controller
         return new Resource(true, 'Detail Customer', $customer);
     }
 
+    public function addLimitGroupDevice(Request $request, Customer $customer)
+    {
+        $validator = Validator::make($request->all(), [
+            'device_id'     => 'required',
+            'group_id'      => 'required',
+            'limit'         => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $current = $customer->limit_group_device ?? [];
+
+        foreach ($current as $item) {
+            if (
+                $item['device_id'] == $request->device_id &&
+                $item['group_id'] == $request->group_id
+            ) {
+                return response()->json([
+                    'message' => 'Device & Group combination already exists'
+                ], 409);
+            }
+        }
+
+        $current[] = [
+            'device_id' => $request->device_id,
+            'group_id'  => $request->group_id,
+            'limit'     => $request->limit,
+        ];
+
+        $customer->update(['limit_group_device' => $current]);
+        return new Resource(true, 'Add limit group device to customer successfully', $customer);
+    }
+
+    public function updateLimitGroupDevice(Request $request, Customer $customer)
+    {
+        $validator = Validator::make($request->all(), [
+            'device_id' => 'required|exists:devices,id',
+            'group_id'  => 'required|exists:groups,id',
+            'limit'     => 'required|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $current = $customer->limit_group_device ?? [];
+
+        $found = false;
+
+        foreach ($current as $index => $item) {
+
+            if (
+                $item['device_id'] == $request->device_id &&
+                $item['group_id'] == $request->group_id
+            ) {
+                $current[$index]['limit'] = $request->limit;
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return response()->json([
+                'message' => 'Device & Group combination not found'
+            ], 404);
+        }
+
+        $customer->limit_group_device = $current;
+        $customer->save();
+
+        return new Resource(true, 'Limit updated successfully', $customer);
+    }
 
 }

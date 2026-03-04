@@ -30,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
 // Customer
 Route::apiResource('/customer', CustomerController::class);
 // Route::delete('/customers/{uid}', [CustomerController::class, 'delete']);
+Route::post('/customer/{customer}/limit-group-device', [CustomerController::class, 'addLimitGroupDevice']);
+Route::post('/customer/{customer}/limit-group-device/update', 
+    [CustomerController::class, 'updateLimitGroupDevice']);
 
 // Role
 Route::apiResource('/role', RoleController::class);

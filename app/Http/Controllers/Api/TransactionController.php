@@ -55,8 +55,40 @@ class TransactionController extends Controller
             return response()->json(['error' => 'Customer limit exceeded'], 422);
         }
 
+        // for limit group device
+        $current = $customer->limit_group_device ?? [];
+
+        $found = false;
+
+        foreach ($current as $index => $item) {
+
+            if (
+                $item['device_id'] == $device->id &&
+                $item['group_id'] == $group->id
+            ) {
+                $found = true;
+
+                if ($item['limit'] <= 0) {
+                    return response()->json([
+                        'error' => 'Customer limit group device exceeded'
+                    ], 422);
+                }
+
+                // kurangi limit
+                $current[$index]['limit'] -= 1;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return response()->json([
+                'error' => 'No limit set for this device & group'
+            ], 422);
+        }
+
         $limitConfig = Configuration::where('name', 'limit_time')->first();
-        $isLimitActive = $limitConfig ? (bool) $limitConfig->status : false;
+        // $isLimitActive = $limitConfig ? (bool) $limitConfig->status : false;
+        $isLimitActive = false;
 
         // Check last transaction for this customer and group
         if ($isLimitActive && $lastTransaction = Transaction::where('uid', $customer->uid)
@@ -77,6 +109,10 @@ class TransactionController extends Controller
         $group->limits -= 1;
         $group->save();
         $customer->limits -= 1;
+        $customer->save();
+
+        // for limit group device
+        $customer->limit_group_device = $current;
         $customer->save();
 
         $transaction = Transaction::create([
