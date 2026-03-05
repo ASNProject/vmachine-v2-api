@@ -12,6 +12,9 @@ use App\Models\Transaction;
 use App\Http\Resources\Resource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\CustomerImport;
+use App\Exports\CustomerTemplateExport;
 
 class CustomerController extends Controller
 {
@@ -273,6 +276,35 @@ class CustomerController extends Controller
         $customer->save();
 
         return new Resource(true, 'Limit updated successfully', $customer);
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv'
+        ]);
+
+        $import = new CustomerImport();
+
+        Excel::import($import, $request->file('file'));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Import selesai',
+            'result' => [
+                'inserted' => $import->inserted,
+                'updated' => $import->updated,
+                'skipped' => $import->skipped
+            ]
+        ]);
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(
+            new CustomerTemplateExport,
+            'customer_template.xlsx'
+        );
     }
 
 }

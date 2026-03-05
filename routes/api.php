@@ -27,6 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
 });
 
+Route::post('/customer/import', [CustomerController::class, 'importExcel']);
+Route::get('/customer/template', [CustomerController::class, 'downloadTemplate']);
+
 // Customer
 Route::apiResource('/customer', CustomerController::class);
 // Route::delete('/customers/{uid}', [CustomerController::class, 'delete']);
