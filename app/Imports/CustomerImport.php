@@ -27,10 +27,8 @@ class CustomerImport implements ToCollection
             $uid = trim((string) ($row[0] ?? ''));
             $name = trim((string) ($row[1] ?? ''));
 
-            // PERBAIKAN UTAMA: paksa nomor HP menjadi string
             $phone = trim((string) ($row[2] ?? ''));
 
-            // bersihkan karakter selain angka
             $phone = preg_replace('/[^0-9]/', '', $phone);
 
             $role_id = $row[3] ?? null;
@@ -41,20 +39,20 @@ class CustomerImport implements ToCollection
                 continue;
             }
 
-            $limitPerGroup = intdiv($limits, $groupCount);
-            $remainder = $limits % $groupCount;
+            // $limitPerGroup = intdiv($limits, $groupCount);
+            // $remainder = $limits % $groupCount;
 
-            $limitGroupDevice = $groups->values()->map(function ($group, $index)
-                use ($limitPerGroup, $remainder, $groupCount) {
+            // $limitGroupDevice = $groups->values()->map(function ($group, $index)
+            //     use ($limitPerGroup, $remainder, $groupCount) {
 
-                return [
-                    'device_id' => $group->device_id,
-                    'group_id' => $group->id,
-                    'limit' => $index === ($groupCount - 1)
-                        ? $limitPerGroup + $remainder
-                        : $limitPerGroup,
-                ];
-            })->toArray();
+            //     return [
+            //         'device_id' => $group->device_id,
+            //         'group_id' => $group->id,
+            //         'limit' => $index === ($groupCount - 1)
+            //             ? $limitPerGroup + $remainder
+            //             : $limitPerGroup,
+            //     ];
+            // })->toArray();
 
             $customer = Customer::where('uid', $uid)->first();
 
@@ -65,7 +63,7 @@ class CustomerImport implements ToCollection
                     'phone_number' => $phone,
                     'role_id' => $role_id,
                     'limits' => $limits,
-                    'limit_group_device' => $limitGroupDevice
+                    // 'limit_group_device' => $limitGroupDevice
                 ]);
 
                 $this->updated++;
@@ -78,7 +76,7 @@ class CustomerImport implements ToCollection
                     'phone_number' => $phone,
                     'role_id' => $role_id,
                     'limits' => $limits,
-                    'limit_group_device' => $limitGroupDevice
+                    // 'limit_group_device' => $limitGroupDevice
                 ]);
 
                 $this->inserted++;

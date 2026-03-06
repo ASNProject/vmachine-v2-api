@@ -61,30 +61,30 @@ class CustomerController extends Controller
         // })->values()->toArray();
 
         // Versi 2: Dibagi dari limits
-        $groups = Group::all();
-        $groupCount = $groups->count();
+        // $groups = Group::all();
+        // $groupCount = $groups->count();
 
-        if ($groupCount == 0) {
-            return response()->json([
-                'message' => 'No groups available in system'
-            ], 422);
-        }
+        // if ($groupCount == 0) {
+        //     return response()->json([
+        //         'message' => 'No groups available in system'
+        //     ], 422);
+        // }
 
-        $totalLimit   = (int) $request->limits;
-        $limitPerGroup = intdiv($totalLimit, $groupCount); 
-        $remainder     = $totalLimit % $groupCount;       
+        // $totalLimit   = (int) $request->limits;
+        // $limitPerGroup = intdiv($totalLimit, $groupCount); 
+        // $remainder     = $totalLimit % $groupCount;       
 
-        $limitGroupDevice = $groups->values()->map(function ($group, $index) 
-            use ($limitPerGroup, $remainder, $groupCount) {
+        // $limitGroupDevice = $groups->values()->map(function ($group, $index) 
+        //     use ($limitPerGroup, $remainder, $groupCount) {
 
-            return [
-                'device_id' => $group->device_id,
-                'group_id'  => $group->id,
-                'limit'     => $index === ($groupCount - 1)
-                                ? $limitPerGroup + $remainder
-                                : $limitPerGroup,
-            ];
-        })->toArray();
+        //     return [
+        //         'device_id' => $group->device_id,
+        //         'group_id'  => $group->id,
+        //         'limit'     => $index === ($groupCount - 1)
+        //                         ? $limitPerGroup + $remainder
+        //                         : $limitPerGroup,
+        //     ];
+        // })->toArray();
 
         $customer = Customer::create([
             'uid'           => $request->uid,
@@ -92,7 +92,7 @@ class CustomerController extends Controller
             'phone_number'  => $request->phone_number,
             'role_id'       => $request->role_id,
             'limits'        => $request->limits,     
-            'limit_group_device' => $limitGroupDevice, 
+            // 'limit_group_device' => $limitGroupDevice, 
         ]);
 
         return new Resource(true, 'Data Customer Berhasil Ditambahkan', $customer);
@@ -115,33 +115,33 @@ class CustomerController extends Controller
 
         $customer = Customer::where('uid', $uid)->firstOrFail();
 
-        $limitGroupDevice = $customer->limit_group_device;
+        // $limitGroupDevice = $customer->limit_group_device;
 
-        if (!is_null($request->limits)) {
+        // if (!is_null($request->limits)) {
 
-            $groups = Group::all();
-            $groupCount = $groups->count();
+        //     $groups = Group::all();
+        //     $groupCount = $groups->count();
 
-            if ($groupCount == 0) {
-                return response()->json([
-                    'message' => 'No groups available in system'
-                ], 422);
-            }
+        //     if ($groupCount == 0) {
+        //         return response()->json([
+        //             'message' => 'No groups available in system'
+        //         ], 422);
+        //     }
 
-            $totalLimit = (int) $request->limits;
-            $limitPerGroup = intdiv($totalLimit, $groupCount);
-            $remainder = $totalLimit % $groupCount;
+        //     $totalLimit = (int) $request->limits;
+        //     $limitPerGroup = intdiv($totalLimit, $groupCount);
+        //     $remainder = $totalLimit % $groupCount;
 
-            $limitGroupDevice = $groups->values()->map(function ($group, $index)
-                use ($limitPerGroup, $remainder, $groupCount) {
-                    return [
-                        'device_id' => $group->device_id,
-                        'group_id' => $group->id,
-                        'limit' => $index === ($groupCount - 1) ? $limitPerGroup + $remainder : $limitPerGroup,
-                    ];
-                }
-            )->toArray();
-        }
+        //     $limitGroupDevice = $groups->values()->map(function ($group, $index)
+        //         use ($limitPerGroup, $remainder, $groupCount) {
+        //             return [
+        //                 'device_id' => $group->device_id,
+        //                 'group_id' => $group->id,
+        //                 'limit' => $index === ($groupCount - 1) ? $limitPerGroup + $remainder : $limitPerGroup,
+        //             ];
+        //         }
+        //     )->toArray();
+        // }
 
         $customer->update([
             'uid'          => $request->uid,
@@ -149,7 +149,7 @@ class CustomerController extends Controller
             'phone_number' => $request->phone_number,
             'role_id'      => $request->role_id,
             'limits'       => $request->limits,
-            'limit_group_device' => $limitGroupDevice,
+            // 'limit_group_device' => $limitGroupDevice,
         ]);
 
         return new Resource(true, 'Data Customer Berhasil Diperbarui', $customer);
