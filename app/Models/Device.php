@@ -14,7 +14,7 @@ class Device extends Model
         'group' => 'array',
     ];
 
-    public function groups() {
-        return $this->hasMany(Group::class, 'device_id', 'id');
-    }
+    // public function groups() {
+    //     return $this->hasMany(Group::class, 'device_id', 'id');
+    // }
 }

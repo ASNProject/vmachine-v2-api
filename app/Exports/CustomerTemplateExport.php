@@ -22,19 +22,23 @@ class CustomerTemplateExport implements
             'name',
             'phone_number',
             'role_id',
-            'limits'
+            'limits',
+            'group1_limit',
+            'group2_limit',
+            'group3_limit',
+            'group4_limit',
+            'group5_limit'
         ];
     }
 
-    // membuat kolom phone_number sebagai TEXT
     public function columnFormats(): array
     {
         return [
-            'C' => NumberFormat::FORMAT_TEXT,
+            'A' => NumberFormat::FORMAT_TEXT, // UID
+            'C' => NumberFormat::FORMAT_TEXT, // phone
         ];
     }
 
-    // mengatur lebar kolom
     public function columnWidths(): array
     {
         return [
@@ -43,10 +47,14 @@ class CustomerTemplateExport implements
             'C' => 20,
             'D' => 10,
             'E' => 10,
+            'F' => 15,
+            'G' => 15,
+            'H' => 15,
+            'I' => 15,
+            'J' => 15,
         ];
     }
 
-    // membuat header bold
     public function styles(Worksheet $sheet)
     {
         return [

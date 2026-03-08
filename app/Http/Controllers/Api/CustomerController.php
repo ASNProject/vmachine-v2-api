@@ -44,7 +44,23 @@ class CustomerController extends Controller
             'name'         => 'required',
             'role_id'      => 'required',
             'limits'       => 'required',
+
+            'limit_group_device' => 'required|array|size:5',
+            'limit_group_device.*.group_id' => 'required|integer|between:1,5',
+            'limit_group_device.*.limit' => 'required|integer|min:0',
         ]);
+
+        $groupIds = collect($request->limit_group_device)->pluck('group_id');
+
+        $allowedGroups = [1,2,3,4,5];
+
+        foreach ($request->limit_group_device as $item) {
+            if (!in_array($item['group_id'], $allowedGroups)) {
+                return response()->json([
+                    'message' => 'group_id hanya boleh 1 sampai 5'
+                ], 422);
+            }
+        }
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -86,13 +102,22 @@ class CustomerController extends Controller
         //     ];
         // })->toArray();
 
+        $limitGroupDevice = collect($request->limit_group_device)->map(function ($item) {
+            return [
+                'group_id' => $item['group_id'],
+                'limit' => $item['limit'],
+            ];
+        })
+        ->values()
+        ->toArray();
+
         $customer = Customer::create([
             'uid'           => $request->uid,
             'name'          => $request->name,
             'phone_number'  => $request->phone_number,
             'role_id'       => $request->role_id,
             'limits'        => $request->limits,     
-            // 'limit_group_device' => $limitGroupDevice, 
+            'limit_group_device' => $limitGroupDevice, 
         ]);
 
         return new Resource(true, 'Data Customer Berhasil Ditambahkan', $customer);
@@ -107,6 +132,11 @@ class CustomerController extends Controller
             ],
             'name' => 'required',
             'role_id' => 'required|exists:roles,id',
+            'limits' => 'sometimes|numeric|min:0',
+
+            'limit_group_device' => 'sometimes|array|size:5',
+            'limit_group_device.*.group_id' => 'required|integer|between:1,5',
+            'limit_group_device.*.limit' => 'required|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -143,14 +173,44 @@ class CustomerController extends Controller
         //     )->toArray();
         // }
 
-        $customer->update([
+        $data = [
             'uid'          => $request->uid,
             'name'         => $request->name,
             'phone_number' => $request->phone_number,
             'role_id'      => $request->role_id,
-            'limits'       => $request->limits,
-            // 'limit_group_device' => $limitGroupDevice,
-        ]);
+        ];
+
+        // update limits jika dikirim
+        if ($request->has('limits')) {
+            $data['limits'] = $request->limits;
+        }
+
+        // update limit_group_device jika dikirim
+        if ($request->has('limit_group_device')) {
+
+            // cek group_id unik
+            $groupIds = collect($request->limit_group_device)->pluck('group_id');
+
+            if ($groupIds->unique()->count() != count($groupIds)) {
+                return response()->json([
+                    'message' => 'group_id tidak boleh duplikat'
+                ], 422);
+            }
+
+            $limitGroupDevice = collect($request->limit_group_device)
+                ->map(function ($item) {
+                    return [
+                        'group_id' => $item['group_id'],
+                        'limit'    => $item['limit'],
+                    ];
+                })
+                ->values()
+                ->toArray();
+
+            $data['limit_group_device'] = $limitGroupDevice;
+        }
+
+        $customer->update($data);
 
         return new Resource(true, 'Data Customer Berhasil Diperbarui', $customer);
     }

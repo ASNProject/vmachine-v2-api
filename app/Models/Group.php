@@ -15,7 +15,7 @@ class Group extends Model
         'group_name',
         'products',
         'limits',
-        'device_id',
+        // 'device_id
         'description',
     ];
 

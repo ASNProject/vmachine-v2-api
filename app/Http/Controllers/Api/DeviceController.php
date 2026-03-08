@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Device;
+use App\Models\Group;
 use App\Http\Resources\Resource;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,9 +19,16 @@ class DeviceController extends Controller
     public function index()
     {
         // get all data
-        $device = Device::with('groups')->latest()->paginate(10);
+        $devices = Device::latest()->paginate(10);
+        // $devices = Device::with('groups)->latest()->paginate(10);
 
-        return new Resource(true, 'List Data Device', $device);
+        $groups = Group::all();
+        $devices->getCollection()->transform(function ($device) use ($groups) {
+            $device->groups = $groups;
+            return $device;
+        });
+
+        return new Resource(true, 'List Data Device', $devices);
     }
 
     /**
@@ -75,7 +83,11 @@ class DeviceController extends Controller
 
     public function show($id)
     {
-        $device = Device::with('groups')->where('id', $id)->firstOrFail();
+        $device = Device::findOrFail($id);
+
+        $groups = Group::all();
+
+        $device->groups = $groups;
 
         return new Resource(true, 'Detail Device', $device);
     }

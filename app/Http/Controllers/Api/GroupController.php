@@ -34,7 +34,7 @@ class GroupController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'group_name'          => 'required',
-            'device_id'           => 'required',
+            // 'device => 'require
         ]);
 
         if ($validator->fails()) {
@@ -44,7 +44,7 @@ class GroupController extends Controller
         $itemgroup = Group::create([
             'group_name'           => $request->group_name,
             'limits'              => $request->limits,
-            'device_id'            => $request->device_id,
+            // 'device_id => $request->device_id
             'description'         => $request->description,
 
         ]);
@@ -85,7 +85,7 @@ class GroupController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'group_name'          => 'required',
-            'device_id'           => 'required',
+            // 'device_id => 'required
         ]);
 
         if ($validator->fails()) {
@@ -97,7 +97,7 @@ class GroupController extends Controller
         $group->update([
             'group_name'           => $request->group_name,
             'limits'              => $request->limits,
-            'device_id'            => $request->device_id,
+            // device_id => $request->device_id
             'description'         => $request->description,
         ]);
 
@@ -116,5 +116,37 @@ class GroupController extends Controller
         $group = Group::where('id', $id)->firstOrFail();
 
         return new Resource(true, 'Detail Group', $group);
+    }
+
+    public function removeProduct(Request $request, Group $group)
+    {
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $products = $group->products ?? [];
+
+        $filtered = collect($products)
+            ->reject(function ($item) use ($request) {
+                return $item['product_id'] == $request->product_id;
+            })
+            ->values()
+            ->toArray();
+
+        if (count($products) === count($filtered)) {
+            return response()->json([
+                'message' => 'Product not found in this group'
+            ], 404);
+        }
+
+        $group->update([
+            'products' => $filtered
+        ]);
+
+        return new Resource(true, 'Product removed from group successfully.', $group);
     }
 }

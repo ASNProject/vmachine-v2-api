@@ -43,9 +43,9 @@ class TransactionController extends Controller
         $group = Group::findOrFail($request->group_id);
         $product = Product::findOrFail($request->product_id);
 
-        if ($group->device_id != $device->id) {
-            return response()->json(['error' => 'Group does not belong to the specified device.'], 422);
-        }
+        // if ($group->device_id != $device->id) {
+        //     return response()->json(['error' => 'Group does not belong to the specified device.'], 422);
+        // }
 
         if ($group->limits <= 0) {
             return response()->json(['error' => 'Group limit exceeded.'], 422);
@@ -63,7 +63,7 @@ class TransactionController extends Controller
         foreach ($current as $index => $item) {
 
             if (
-                $item['device_id'] == $device->id &&
+                // $item['device_id'] == $device->id &&
                 $item['group_id'] == $group->id
             ) {
                 $found = true;

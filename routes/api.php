@@ -43,6 +43,7 @@ Route::apiResource('/role', RoleController::class);
 // Item Group 
 Route::apiResource('/group', GroupController::class);
 Route::post('/group/{group}/product', [GroupController::class, 'addProduct']);
+Route::delete('/groups/{group}/product', [GroupController::class, 'removeProduct']);
 
 // Product
 Route::apiResource('/product', ProductController::class);
