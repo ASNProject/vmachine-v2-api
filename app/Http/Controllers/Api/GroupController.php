@@ -121,7 +121,7 @@ class GroupController extends Controller
     public function removeProduct(Request $request, Group $group)
     {
         $validator = Validator::make($request->all(), [
-            'product_id' => 'required|exists:products,id',
+            'index' => 'required|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -130,23 +130,20 @@ class GroupController extends Controller
 
         $products = $group->products ?? [];
 
-        $filtered = collect($products)
-            ->reject(function ($item) use ($request) {
-                return $item['product_id'] == $request->product_id;
-            })
-            ->values()
-            ->toArray();
-
-        if (count($products) === count($filtered)) {
+        if (!isset($products[$request->index])) {
             return response()->json([
-                'message' => 'Product not found in this group'
+                'message' => 'Product index not found'
             ], 404);
         }
 
+        unset($products[$request->index]);
+
+        $products = array_values($products);
+
         $group->update([
-            'products' => $filtered
+            'products' => $products
         ]);
 
-        return new Resource(true, 'Product removed from group successfully.', $group);
+        return new Resource(true, 'Product removed successfully', $group);
     }
 }
