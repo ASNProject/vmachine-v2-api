@@ -67,6 +67,8 @@ Route::prefix('reports')->group(function () {
 
     Route::get('/devices/usage', [ReportController::class, 'deviceUsage']);
     Route::get('/devices/export', [ReportController::class, 'exportDevices']);
+
+    Route::get('/roles/export', [ReportController::class, 'exportRoles']);
 });
 
 Route::delete('/reports/transactions/truncate', [ReportController::class, 'truncateTransactions']);

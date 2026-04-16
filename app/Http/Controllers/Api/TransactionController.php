@@ -21,7 +21,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $transactions = Transaction::with(['group', 'product'])->latest()->get();
+        $transactions = Transaction::with(['group', 'product', 'customer'])->latest()->get();
 
         return new Resource(true, 'List Data Transactions', $transactions);
     }

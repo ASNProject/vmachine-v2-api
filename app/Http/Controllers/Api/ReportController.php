@@ -11,6 +11,7 @@ use App\Models\Customer;
 use App\Exports\TransactionsExport;
 use App\Exports\ProductsExport;
 use App\Exports\DevicesExport;
+use App\Exports\RolesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use DB;
 
@@ -35,6 +36,7 @@ class ReportController extends Controller
         if ($request->customer_id) {
             $query->where('customer_id', $request->customer_id);
         }
+        
 
         $data = $query->latest()->get();
 
@@ -131,5 +133,40 @@ class ReportController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function roleUsage(Request $request)
+    {
+        $query = DB::table('transactions')
+            ->join('customers', 'transactions.customer_uid', '=', 'customers.id')
+            ->join('roles', 'customers.role_id', '=', 'roles.id')
+            ->select(
+                'roles.id',
+                'roles.name',
+                DB::raw('COUNT(transactions.id) as total_transactions')
+            )
+            ->groupBy('roles.id', 'roles.name')
+            ->orderByDesc('total_transactions');
+
+        // FILTER TANGGAL (optional)
+        if ($request->start && $request->end) {
+            $query->whereBetween('transactions.created_at', [
+                $request->start . ' 00:00:00',
+                $request->end . ' 23:59:59'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $query->get()
+        ]);
+    }
+
+    public function exportRoles(Request $request)
+    {
+        return Excel::download(
+            new RolesExport($request),
+            'roles_report.xlsx'
+        );
     }
 }
